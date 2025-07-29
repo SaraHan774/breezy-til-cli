@@ -16,12 +16,24 @@ A simple and extensible command-line tool to help you capture, manage, and summa
 ## 📦 Installation (recommended via pipx)
 
 ```bash
-pipx install git+https://github.com/yourname/til
+pipx install git+https://github.com/yourname/breezy-til-cli.git
 
 or if working locally:
 
 cd til/
 pipx install .
+```
+
+## 📦 Update (recommended via pipx)
+
+```bash
+pipx reinstall git+https://github.com/yourname/breezy-til-cli.git
+```
+
+## Check Installed Version 
+
+```bash 
+pipx list
 ```
 
 ## 🛠 Commands
