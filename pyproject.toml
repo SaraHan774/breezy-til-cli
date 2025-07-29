@@ -1,0 +1,19 @@
+[project]
+name = "til"
+version = "0.1.0"
+description = "📝 A CLI for managing your Today I Learned (TIL) notes"
+authors = [
+    {name = "trinity", email = "trinity@dunamu.com"}
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pathspec",
+]
+license = {text = "MIT License"}
+
+[project.scripts]
+til = "til.cli:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

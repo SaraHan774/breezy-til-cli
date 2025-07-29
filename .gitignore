@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+
+# Virtual environments
+venv/
+.env/
+.envrc
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
+
+# Pip or pyproject lock files
+poetry.lock
+Pipfile.lock
+
+# TIL-specific
+*.md~             # 백업 파일
+*.zip             # 압축 파일 (예: zip-2025-07-01_to_2025-07-31.md)
+zip-*.md          # zip 파일 결과물
+*.Links.md        # generated link files
+
+# Git
+.git/
+
+# Exclude but allow .tilrc
+.tilrc
+!.tilrc
