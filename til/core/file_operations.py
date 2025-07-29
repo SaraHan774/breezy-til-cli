@@ -30,7 +30,7 @@ def ensure_category_folder(base_dir: str, category: str) -> str:
     os.makedirs(folder, exist_ok=True)
     return folder
 
-def create_or_open_note(base_dir: str, category: str, date_str: str = None, editor: str = "code"):
+def create_or_open_note(base_dir: str, category: str, date_str: str = None, editor: str = "code", template_id: str = "default"):
     """Create or open a TIL note."""
     today = datetime.strptime(date_str, "%Y-%m-%d") if date_str else datetime.today()
     date = today.strftime("%Y-%m-%d")
@@ -39,9 +39,19 @@ def create_or_open_note(base_dir: str, category: str, date_str: str = None, edit
     filepath = os.path.join(folder, f"{date}.md")
 
     if not os.path.exists(filepath):
-        with open(filepath, "w") as f:
-            f.write(f"# TIL - {date}\n\n- ")
-        print(f"📄 Created new TIL entry: {filepath}")
+        # 템플릿 시스템 사용
+        from til.core.template_manager import TemplateManager
+        template_manager = TemplateManager(base_dir)
+        
+        try:
+            content = template_manager.get_template_content(template_id, date, category)
+        except Exception as e:
+            # 템플릿 로드 실패 시 기본 내용 사용
+            content = f"# TIL - {date}\n\n## 📝 오늘 학습한 내용\n\n- "
+        
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"📄 Created new TIL entry with '{template_id}' template: {filepath}")
     else:
         print(f"📂 Opening existing TIL entry: {filepath}")
 

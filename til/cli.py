@@ -39,6 +39,8 @@ from til.core.index_generator import update_index
 from til.core.link_manager import add_link_to_monthly_links_file
 from til.core.zip_generator import generate_til_zip, generate_current_month_zip
 from til.core.git_operations import save_to_git
+from til.core.streak_analyzer import get_streak_info, get_streak_info_with_visualization
+from til.core.template_manager import TemplateManager, format_template_list
 
 # -------------------------------
 # 3. 명령어 라우팅
@@ -73,6 +75,7 @@ def main():
     note_parser = subparsers.add_parser("note", help="오늘 또는 지정 날짜에 TIL 생성")
     note_parser.add_argument("category", nargs="?", default=None, help="주제명 (예: android)")
     note_parser.add_argument("--date", type=str, help="날짜 지정 (형식: YYYY-MM-DD)")
+    note_parser.add_argument("--template", type=str, default="default", help="사용할 템플릿 (예: project, study, bugfix)")
 
     # search
     search_parser = subparsers.add_parser(
@@ -106,6 +109,20 @@ def main():
     zip_parser.add_argument("--from", dest="from_date", help="시작 날짜 (YYYY-MM-DD)")
     zip_parser.add_argument("--to", dest="to_date", help="끝 날짜 (YYYY-MM-DD)")
 
+    # streak
+    streak_parser = subparsers.add_parser("streak", help="학습 스트릭과 통계 확인")
+    streak_parser.add_argument("--visual", action="store_true", help="시각화 포함 (잔디 + 주간 패턴)")
+    streak_parser.add_argument("--grass-only", action="store_true", help="잔디만 표시")
+    streak_parser.add_argument("--weekly-only", action="store_true", help="주간 패턴만 표시")
+
+    # template
+    template_parser = subparsers.add_parser("template", help="템플릿 관리")
+    template_parser.add_argument("template_command", choices=["list", "create", "delete", "show"], help="템플릿 명령어")
+    template_parser.add_argument("--id", type=str, help="템플릿 ID")
+    template_parser.add_argument("--name", type=str, help="템플릿 이름")
+    template_parser.add_argument("--description", type=str, help="템플릿 설명")
+    template_parser.add_argument("--file", type=str, help="템플릿 내용 파일 경로")
+
     # 명령 실행
     args = parser.parse_args()
 
@@ -114,7 +131,7 @@ def main():
         if not category:
             print("❌ category를 명시하거나 .tilrc에 default_category를 설정해주세요.")
             sys.exit(1)
-        create_or_open_note(BASE_DIR, category, args.date, config.default_editor)
+        create_or_open_note(BASE_DIR, category, args.date, config.default_editor, args.template)
     elif args.command == "search":
         search_notes(BASE_DIR, args.keyword)
     elif args.command == "index":
@@ -141,6 +158,62 @@ def main():
             generate_til_zip(BASE_DIR, args.from_date, args.to_date)
         else:
             generate_current_month_zip(BASE_DIR)
+    elif args.command == "streak":
+        if args.visual:
+            streak_info = get_streak_info_with_visualization(BASE_DIR, show_grass=True, show_weekly=True)
+        elif args.grass_only:
+            streak_info = get_streak_info_with_visualization(BASE_DIR, show_grass=True, show_weekly=False)
+        elif args.weekly_only:
+            streak_info = get_streak_info_with_visualization(BASE_DIR, show_grass=False, show_weekly=True)
+        else:
+            streak_info = get_streak_info(BASE_DIR)
+        print(streak_info)
+    elif args.command == "template":
+        template_manager = TemplateManager(BASE_DIR)
+        
+        # 템플릿 하위 명령어 확인
+        template_command = getattr(args, 'template_command', None)
+        
+        if template_command == "list":
+            templates = template_manager.list_templates()
+            print(format_template_list(templates))
+        elif template_command == "show":
+            if not args.id:
+                print("❌ --id 옵션이 필요합니다.")
+                sys.exit(1)
+            try:
+                templates = template_manager.list_templates()
+                if args.id in templates:
+                    content = templates[args.id]["content"]
+                    print(f"📋 템플릿 '{args.id}' 내용:")
+                    print("=" * 50)
+                    print(content)
+                else:
+                    print(f"❌ 템플릿 '{args.id}'을 찾을 수 없습니다.")
+            except Exception as e:
+                print(f"❌ 템플릿을 찾을 수 없습니다: {e}")
+        elif template_command == "create":
+            if not all([args.id, args.name, args.description, args.file]):
+                print("❌ --id, --name, --description, --file 옵션이 모두 필요합니다.")
+                sys.exit(1)
+            try:
+                with open(args.file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                template_manager.create_template(args.id, args.name, args.description, content)
+                print(f"✅ 템플릿 '{args.id}'이 생성되었습니다.")
+            except Exception as e:
+                print(f"❌ 템플릿 생성 실패: {e}")
+        elif template_command == "delete":
+            if not args.id:
+                print("❌ --id 옵션이 필요합니다.")
+                sys.exit(1)
+            try:
+                template_manager.delete_template(args.id)
+                print(f"✅ 템플릿 '{args.id}'이 삭제되었습니다.")
+            except Exception as e:
+                print(f"❌ 템플릿 삭제 실패: {e}")
+        else:
+            print("❌ 유효하지 않은 템플릿 명령어입니다. 'list', 'show', 'create', 'delete' 중 하나를 선택하세요.")
 
 # -------------------------------
 # 4. 진입점
