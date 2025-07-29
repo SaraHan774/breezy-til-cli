@@ -18,44 +18,34 @@ PYTHON_IN_VENV = os.path.join(VENV_DIR, "bin", "python3") if sys.platform != "wi
 REQUIREMENTS = os.path.join(SCRIPT_DIR, "requirements.txt")
 
 # -------------------------------
-# 1. 가상환경 자동 설정
+# 1. 기본 설정
 # -------------------------------
-def ensure_virtualenv():
-    if sys.executable != PYTHON_IN_VENV:
-        if not os.path.exists(VENV_DIR):
-            print("⚙️  Creating virtual environment...")
-            subprocess.run([sys.executable, "-m", "venv", VENV_DIR], check=True)
-
-        print("🔁 Re-running inside virtual environment...")
-        subprocess.run([PYTHON_IN_VENV, __file__] + sys.argv[1:])
-        sys.exit(0)
-
-    # 가상환경 내에서만 실행되는 영역
+def setup_environment():
     print(f"📂 Working in TIL base directory: {BASE_DIR}")
-
-    # pathspec 없는 경우에만 설치
+    
+    # pathspec 없는 경우에만 설치 (pipx 환경에서는 이미 설치되어 있음)
     try:
         import pathspec
     except ImportError:
         print("📦 Installing dependencies...")
-        subprocess.run([PYTHON_IN_VENV, "-m", "pip", "install", "-r", REQUIREMENTS], check=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", REQUIREMENTS], check=True)
 
 # -------------------------------
 # 2. 모듈 임포트
 # -------------------------------
-from core.config import TILConfig
-from core.file_operations import create_or_open_note, search_notes, interactive_find
-from core.index_generator import update_index
-from core.link_manager import add_link_to_monthly_links_file
-from core.zip_generator import generate_til_zip, generate_current_month_zip
-from core.git_operations import save_to_git
+from til.core.config import TILConfig
+from til.core.file_operations import create_or_open_note, search_notes, interactive_find
+from til.core.index_generator import update_index
+from til.core.link_manager import add_link_to_monthly_links_file
+from til.core.zip_generator import generate_til_zip, generate_current_month_zip
+from til.core.git_operations import save_to_git
 
 # -------------------------------
 # 3. 명령어 라우팅
 # -------------------------------
 def main():
-    # 가상환경 확인
-    ensure_virtualenv()
+    # 환경 설정
+    setup_environment()
     
     # 설정 로드
     config = TILConfig(BASE_DIR)

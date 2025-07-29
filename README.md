@@ -13,27 +13,58 @@ A simple and extensible command-line tool to help you capture, manage, and summa
 - 📚 Auto-generated README index (`til index`)
 - ⚙️ Custom configuration via `.tilrc`
 
-## 📦 Installation (recommended via pipx)
+## 📦 Installation
+
+### Using pipx (Recommended)
 
 ```bash
-pipx install git+https://github.com/yourname/breezy-til-cli.git
+# Install from GitHub
+pipx install git+https://github.com/trinity-uba/breezy-til-cli.git
 
-or if working locally:
-
-cd til/
+# Or install from local directory
+cd breezy-til-cli/
 pipx install .
 ```
 
-## 📦 Update (recommended via pipx)
+### Using pip (Alternative)
 
 ```bash
-pipx reinstall git+https://github.com/yourname/breezy-til-cli.git
+# Install from GitHub
+pip install git+https://github.com/trinity-uba/breezy-til-cli.git
+
+# Or install from local directory
+cd breezy-til-cli/
+pip install .
 ```
 
-## Check Installed Version 
+## 🔄 Updating
+
+### Using pipx
+
+```bash
+# Update to latest version
+pipx upgrade til
+
+# Or reinstall from source
+pipx uninstall til
+pipx install git+https://github.com/trinity-uba/breezy-til-cli.git
+```
+
+### Using pip
+
+```bash
+# Update to latest version
+pip install --upgrade breezy-til-cli
+```
+
+## 📋 Check Installed Version 
 
 ```bash 
+# For pipx installations
 pipx list
+
+# For pip installations
+pip show breezy-til-cli
 ```
 
 ## 🛠 Commands
@@ -66,21 +97,22 @@ til find
 til zip                        # current month
 til zip --from 2025-07-01 --to 2025-07-31
 
-
 # 💾 til save "commit message"
-# Run git add . && git commit -m "...” && git push origin main
+# Run git add . && git commit -m "..." && git push origin main
 
 til save "💡 Add July TILs"
-
 
 # 📚 til index
 # Regenerate the auto-indexed README.md file.
 
 til index
+```
 
-# ⚙️ Configuration (.tilrc)
-# Create a .tilrc file in your TIL/ folder or home directory:
+## ⚙️ Configuration (.tilrc)
 
+Create a `.tilrc` file in your TIL/ folder or home directory:
+
+```ini
 [general]
 default_editor = code
 default_category = uncategorized
@@ -112,6 +144,64 @@ TIL/
 
 ### Install fzf (macOS):
 
-```
+```bash
 brew install fzf
+```
+
+### Install fzf (Ubuntu/Debian):
+
+```bash
+sudo apt install fzf
+```
+
+## 🚀 Quick Start
+
+1. **Install the CLI:**
+   ```bash
+   pipx install git+https://github.com/trinity-uba/breezy-til-cli.git
+   ```
+
+2. **Create your first TIL:**
+   ```bash
+   til note python
+   ```
+
+3. **Add a useful link:**
+   ```bash
+   til link "https://docs.python.org/3/" --title "Python Documentation" --tag python
+   ```
+
+4. **Search your TILs:**
+   ```bash
+   til search async
+   ```
+
+5. **Generate monthly summary:**
+   ```bash
+   til zip
+   ```
+
+## 🔧 Troubleshooting
+
+### If you get "Package is not installed" error:
+```bash
+# Check what's actually installed
+pipx list
+
+# If you see 'til' is installed but with different name, uninstall and reinstall
+pipx uninstall til
+pipx install git+https://github.com/trinity-uba/breezy-til-cli.git
+```
+
+### If you get "'til' already seems to be installed" error:
+```bash
+# Force reinstall
+pipx install --force git+https://github.com/trinity-uba/breezy-til-cli.git
+```
+
+### If you get import errors:
+```bash
+# Reinstall the package
+pip uninstall breezy-til-cli -y
+pip install .
 ```
