@@ -12,6 +12,7 @@ A simple and extensible command-line tool to help you capture, manage, and summa
 - 🧠 Fuzzy file lookup with `fzf` (`til find`)
 - 📦 Generate zip summaries for review (`til zip`)
 - ✅ Git commit/push support (`til save`)
+- 🤖 **Auto Git management** - Schedule automatic daily commits (`til auto`)
 - 📚 Auto-generated README index (`til index`)
 - ⚙️ Custom configuration via `.tilrc`
 
@@ -171,6 +172,15 @@ til zip --from 2025-07-01 --to 2025-07-31
 # Run git add . && git commit -m "..." && git push origin main
 
 til save "💡 Add July TILs"
+
+# 🤖 til auto [command] (자동 Git 관리)
+# 정해진 시간에 자동으로 변경사항을 커밋/푸시
+
+til auto setup --time 20:00                    # 매일 오후 8시에 자동 커밋 설정
+til auto setup --time 20:00 --message "📝 Daily update"  # 커스텀 메시지와 함께
+til auto status                               # 자동화 설정 상태 확인
+til auto test                                 # 즉시 테스트 실행
+til auto remove                               # 자동화 설정 제거
 ```
 
 ### 📚 Index Generation
@@ -322,6 +332,39 @@ pip install . --force-reinstall
 ```
 
 ## 🎯 Advanced Usage
+
+### 🤖 Auto Git Management
+
+Set up automatic daily commits to maintain your learning streak:
+
+1. **Setup automatic commits:**
+   ```bash
+   # 매일 오후 8시에 자동 커밋 설정
+   til auto setup --time 20:00
+   
+   # 커스텀 메시지와 함께 설정
+   til auto setup --time 20:00 --message "📝 Daily TIL update"
+   ```
+
+2. **Check status:**
+   ```bash
+   til auto status
+   ```
+
+3. **Test the automation:**
+   ```bash
+   til auto test
+   ```
+
+4. **Remove automation:**
+   ```bash
+   til auto remove
+   ```
+
+**Supported platforms:**
+- **macOS**: Uses `launchd` (LaunchAgents)
+- **Linux**: Uses `cron`
+- **Windows**: Uses Task Scheduler
 
 ### Creating Custom Templates
 
