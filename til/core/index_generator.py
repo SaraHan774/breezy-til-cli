@@ -35,6 +35,7 @@ def update_index(base_dir: str):
         "- `til find` → fzf 기반 빠른 파일 탐색",
         "- `til zip` → 이번 달 TIL 압축 / `--from --to` 지정 가능",
         "- `til save \"commit msg\"` → git add + commit + push 자동",
+        "- `til auto setup --time 20:00` → 매일 정해진 시간에 자동 커밋/푸시",
         "- `til index` → 이 인덱스 파일을 생성합니다 😄",
         "",
         "---"
