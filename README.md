@@ -12,6 +12,7 @@ A simple and extensible command-line tool to help you capture, manage, and summa
 - 🧠 Fuzzy file lookup with `fzf` (`til find`)
 - 📦 Generate zip summaries for review (`til zip`)
 - ✅ Git commit/push support (`til save`)
+- 🤖 **Auto Git management** - Schedule automatic daily commits (`til auto`)
 - 📚 Auto-generated README index (`til index`)
 - ⚙️ Custom configuration via `.tilrc`
 
@@ -331,6 +332,39 @@ pip install . --force-reinstall
 ```
 
 ## 🎯 Advanced Usage
+
+### 🤖 Auto Git Management
+
+Set up automatic daily commits to maintain your learning streak:
+
+1. **Setup automatic commits:**
+   ```bash
+   # 매일 오후 8시에 자동 커밋 설정
+   til auto setup --time 20:00
+   
+   # 커스텀 메시지와 함께 설정
+   til auto setup --time 20:00 --message "📝 Daily TIL update"
+   ```
+
+2. **Check status:**
+   ```bash
+   til auto status
+   ```
+
+3. **Test the automation:**
+   ```bash
+   til auto test
+   ```
+
+4. **Remove automation:**
+   ```bash
+   til auto remove
+   ```
+
+**Supported platforms:**
+- **macOS**: Uses `launchd` (LaunchAgents)
+- **Linux**: Uses `cron`
+- **Windows**: Uses Task Scheduler
 
 ### Creating Custom Templates
 

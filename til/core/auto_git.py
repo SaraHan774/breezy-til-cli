@@ -42,6 +42,8 @@ class AutoGitManager:
     
     def _save_config(self):
         """설정 파일 저장"""
+        # 디렉토리가 존재하지 않으면 생성
+        os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
         with open(self.config_file, 'w', encoding='utf-8') as f:
             json.dump(self.config, f, indent=2, ensure_ascii=False)
     
@@ -172,12 +174,24 @@ class AutoGitManager:
             print(f"📦 자동 Git 저장 중: '{commit_message}'")
             print(f"📄 변경된 파일: {len(changed_files)}개")
             
-            # Git 명령어 실행
+            # Git 명령어 실행 (push는 선택적)
             commands = [
                 ["git", "add", "."],
-                ["git", "commit", "-m", commit_message],
-                ["git", "push", "origin", "main"]
+                ["git", "commit", "-m", commit_message]
             ]
+            
+            # 원격 저장소가 있는 경우에만 push 실행
+            try:
+                result = subprocess.run(
+                    ["git", "remote", "-v"],
+                    cwd=self.base_dir,
+                    capture_output=True,
+                    text=True
+                )
+                if result.returncode == 0 and result.stdout.strip():
+                    commands.append(["git", "push", "origin", "main"])
+            except:
+                pass  # push 실패해도 커밋은 성공으로 간주
             
             for cmd in commands:
                 result = subprocess.run(
