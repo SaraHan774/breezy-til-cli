@@ -41,6 +41,7 @@ from til.core.zip_generator import generate_til_zip, generate_current_month_zip
 from til.core.git_operations import save_to_git
 from til.core.streak_analyzer import get_streak_info, get_streak_info_with_visualization
 from til.core.template_manager import TemplateManager, format_template_list
+from til.core.auto_git import AutoGitManager, format_status_output
 
 # -------------------------------
 # 3. 명령어 라우팅
@@ -122,6 +123,12 @@ def main():
     template_parser.add_argument("--name", type=str, help="템플릿 이름")
     template_parser.add_argument("--description", type=str, help="템플릿 설명")
     template_parser.add_argument("--file", type=str, help="템플릿 내용 파일 경로")
+
+    # auto (자동 Git 관리)
+    auto_parser = subparsers.add_parser("auto", help="자동 Git 관리 (정해진 시간에 자동 커밋/푸시)")
+    auto_parser.add_argument("auto_command", choices=["setup", "status", "remove", "run", "test"], help="자동화 명령어")
+    auto_parser.add_argument("--time", type=str, help="실행 시간 (HH:MM 형식, 예: 20:00)")
+    auto_parser.add_argument("--message", type=str, help="커밋 메시지 (선택사항)")
 
     # 명령 실행
     args = parser.parse_args()
@@ -214,6 +221,42 @@ def main():
                 print(f"❌ 템플릿 삭제 실패: {e}")
         else:
             print("❌ 유효하지 않은 템플릿 명령어입니다. 'list', 'show', 'create', 'delete' 중 하나를 선택하세요.")
+    elif args.command == "auto":
+        auto_manager = AutoGitManager(BASE_DIR)
+        
+        if args.auto_command == "setup":
+            if not args.time:
+                print("❌ --time 옵션이 필요합니다. (예: --time 20:00)")
+                sys.exit(1)
+            
+            success = auto_manager.setup_schedule(args.time, args.message or "")
+            if success:
+                print("✅ 자동 Git 설정이 완료되었습니다!")
+                print(f"⏰ 매일 {args.time}에 자동으로 커밋/푸시됩니다.")
+        elif args.auto_command == "status":
+            status = auto_manager.get_status()
+            print(format_status_output(status))
+        elif args.auto_command == "remove":
+            success = auto_manager.remove_schedule()
+            if success:
+                print("✅ 자동 Git 설정이 제거되었습니다.")
+        elif args.auto_command == "run":
+            # 스케줄러에서 호출되는 실제 실행 함수
+            success = auto_manager.auto_commit_and_push()
+            if success:
+                print("✅ 자동 Git 작업이 완료되었습니다.")
+            else:
+                print("❌ 자동 Git 작업에 실패했습니다.")
+                sys.exit(1)
+        elif args.auto_command == "test":
+            # 테스트 실행 (즉시 실행)
+            print("🧪 자동 Git 기능을 테스트합니다...")
+            success = auto_manager.auto_commit_and_push()
+            if success:
+                print("✅ 테스트가 성공했습니다!")
+            else:
+                print("❌ 테스트에 실패했습니다.")
+                sys.exit(1)
 
 # -------------------------------
 # 4. 진입점
