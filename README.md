@@ -46,10 +46,10 @@ pip install .
 
 ```bash
 # Update to latest version
-pipx upgrade til
+pipx upgrade breezy-til-cli
 
 # Or reinstall from source
-pipx uninstall til
+pipx uninstall breezy-til-cli
 pipx install git+https://github.com/trinity-uba/breezy-til-cli.git
 ```
 
