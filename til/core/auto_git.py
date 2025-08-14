@@ -188,7 +188,8 @@ class AutoGitManager:
                     capture_output=True,
                     text=True
                 )
-                if result.returncode == 0 and result.stdout.strip():
+                stdout_text = result.stdout if isinstance(result.stdout, str) else ""
+                if result.returncode == 0 and stdout_text.strip():
                     commands.append(["git", "push", "origin", "main"])
             except:
                 pass  # push 실패해도 커밋은 성공으로 간주
