@@ -1,8 +1,11 @@
 import os
 from datetime import datetime
 
-def add_link_to_monthly_links_file(base_dir: str, url: str, date_str: str = None, tag: str = None, title: str = None):
-    """Add a link to monthly links file."""
+def add_link_to_monthly_links_file(base_dir: str, url: str, date_str: str = None, tag: str = None, title: str = None, preview_text: str = None):
+    """Add a link to monthly links file.
+
+    preview_text가 제공되면 같은 줄 끝에 1줄 설명을 덧붙인다.
+    """
     today = datetime.strptime(date_str, "%Y-%m-%d") if date_str else datetime.today()
     date = today.strftime("%Y-%m-%d")
     filename = today.strftime("%Y-%m-Links.md")
@@ -12,6 +15,12 @@ def add_link_to_monthly_links_file(base_dir: str, url: str, date_str: str = None
     entry_text = f"[{title}]({url})" if title else url
     if tag:
         entry_text += f" `#{tag}`"
+    if preview_text:
+        # 설명은 1줄만 사용하고 과도하게 길면 생략 처리한다.
+        snippet = " ".join(preview_text.strip().splitlines())
+        if len(snippet) > 160:
+            snippet = snippet[:157] + "..."
+        entry_text += f" — {snippet}"
     new_entry = f"- [ ] {entry_text}"
     header_line = f"#### {date}"
 

@@ -101,6 +101,7 @@ def main():
     link_parser.add_argument("--date", type=str, help="날짜 지정 (형식: YYYY-MM-DD)")
     link_parser.add_argument("--tag", type=str, help="태그 (예: kotlin)")
     link_parser.add_argument("--title", type=str, help="링크에 붙일 제목")
+    link_parser.add_argument("--preview", action="store_true", help="설명 1줄 미리보기 포함")
 
     # find 
     subparsers.add_parser("find", help="fzf로 모든 TIL 파일을 검색하고 열기")
@@ -148,12 +149,27 @@ def main():
     elif args.command == "link":
         final_tag = args.tag or config.default_link_tag
         final_title = args.title or args.url  # 기본 title은 링크 자체
+        preview_text = None
+
+        # --title 미지정이거나 --preview가 켜진 경우에만 메타 수집 시도 (실패는 조용히 폴백)
+        if (args.title is None) or args.preview:
+            try:
+                from til.core.metadata import fetch_url_metadata
+                meta = fetch_url_metadata(BASE_DIR, args.url)
+                if args.title is None and meta.get("title"):
+                    final_title = meta["title"]
+                if args.preview and meta.get("description"):
+                    preview_text = meta["description"]
+            except Exception:
+                pass
+
         add_link_to_monthly_links_file(
             BASE_DIR,
             url=args.url,
             date_str=args.date,
             tag=final_tag,
-            title=final_title
+            title=final_title,
+            preview_text=preview_text
         )
 
         if config.open_browser:
