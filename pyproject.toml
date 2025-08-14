@@ -1,7 +1,8 @@
 [project]
 name = "breezy-til-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "📝 A CLI for managing your Today I Learned (TIL) notes"
+readme = "README.md"
 authors = [
     {name = "trinity", email = "trinity@dunamu.com"}
 ]
@@ -10,10 +11,27 @@ dependencies = [
     "pathspec",
 ]
 license = {text = "MIT License"}
+keywords = ["til", "cli", "notes", "productivity"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Environment :: Console",
+  "Topic :: Utilities",
+]
 
 [project.scripts]
 til = "til.cli:main"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["til", "til.core"]
+include-package-data = true
